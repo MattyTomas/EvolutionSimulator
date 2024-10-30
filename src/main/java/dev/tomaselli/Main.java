@@ -12,6 +12,7 @@ public class Main {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         SimulatorPanel simulatorPanel = new SimulatorPanel();
+        KeyHandler.simulatorPanel = simulatorPanel;
         window.add(simulatorPanel);
         window.pack();
 

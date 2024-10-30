@@ -5,34 +5,30 @@ import dev.tomaselli.players.Sphere;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class SimulatorPanel extends JPanel implements Runnable {
 
-    private final int screenScale = 4;
+    public final int screenScale = 16;
     private final int screenWidth = 800;
     private final int screenHeight = 600;
 
-    public static List<Circle> circlesList = new ArrayList<>();
-    public static List<Sphere> spheresList = new ArrayList<>();
+    private final int FPS = 60;
+    public static final int entityCap = 5000;
 
-    private final int FPS = 15;
-
-    Thread mainThread;
+    private Thread mainThread;
 
     public SimulatorPanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.BLACK);
         this.setDoubleBuffered(true);
         this.setFocusable(true);
-
+        this.addKeyListener(new KeyHandler());
         this.setDefaultStart();
         this.startMainThread();
     }
 
-    public void startMainThread() {
+    private void startMainThread() {
         mainThread = new Thread(this);
         mainThread.start();
     }
@@ -61,49 +57,57 @@ public class SimulatorPanel extends JPanel implements Runnable {
 
             if(timer >= 1000000000) {
                 System.out.println("FPS: " + drawCount);
+                saveStatistics();
                 timer = 0;
                 drawCount = 0;
             }
         }
     }
 
-    @SuppressWarnings("ForLoopReplaceableByForEach")
     public void update() {
-        for(int i = 0; i < circlesList.size(); i++) {
-            circlesList.get(i).updateStatus();
+        for(int i = 0; i < Circle.circlesList.size(); i++) {
+            Circle.circlesList.get(i).updateStatus();
         }
 
-        for(int i = 0; i < spheresList.size(); i++) {
-            spheresList.get(i).updateStatus();
+        for(int i = 0; i < Sphere.spheresList.size(); i++) {
+            Sphere.spheresList.get(i).updateStatus();
         }
     }
 
 
-    @SuppressWarnings("ForLoopReplaceableByForEach")
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        for(int i = 0; i < circlesList.size(); i++) {
-            circlesList.get(i).draw(g2);
+        for(int i = 0; i < Sphere.spheresList.size(); i++) {
+            Sphere.spheresList.get(i).draw(g2);
         }
 
-        for(int i = 0; i < spheresList.size(); i++) {
-            spheresList.get(i).draw(g2);
+        for(int i = 0; i < Circle.circlesList.size(); i++) {
+            Circle.circlesList.get(i).draw(g2);
         }
 
         g2.dispose();
     }
 
+    private void saveStatistics() {
 
-    public void setDefaultStart() {
+    }
+
+    public void resetSimulation() {
+        Circle.circlesList.clear();
+        Sphere.spheresList.clear();
+        this.setDefaultStart();
+    }
+
+    private void setDefaultStart() {
         for(int i = 0; i < 25; i++) {
             Circle circle = new Circle(this, 350, 300);
-            circlesList.add(circle);
+            Circle.circlesList.add(circle);
         }
 
         for(int i = 0; i < 25; i++) {
             Sphere sphere = new Sphere(this, 446, 300);
-            spheresList.add(sphere);
+            Sphere.spheresList.add(sphere);
         }
     }
 }
